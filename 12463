@@ -1,0 +1,61 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const dayInput = document.getElementById("day");
+    const monthInput = document.getElementById("month");
+    const yearInput = document.getElementById("year");
+    const calcButton = document.getElementById("calculate");
+    const resultDiv = document.getElementById("result");
+
+    // دالة لحذف الأرقام من اليمين عند الضغط على Backspace
+    function setupInputDeletion(input) {
+        input.addEventListener("keydown", function (event) {
+            if (event.key === "Backspace") {
+                event.preventDefault();
+                let value = this.value;
+                if (value.length > 0) {
+                    this.value = value.slice(0, -1);
+                }
+            }
+        });
+    }
+
+    [dayInput, monthInput, yearInput].forEach(setupInputDeletion);
+
+    // دالة لحساب العمر
+    function calculateAge() {
+        let day = parseInt(dayInput.value, 10);
+        let month = parseInt(monthInput.value, 10);
+        let year = parseInt(yearInput.value, 10);
+
+        if (isNaN(day) || isNaN(month) || isNaN(year)) {
+            resultDiv.innerText = "يرجى إدخال تاريخ صحيح!";
+            return;
+        }
+
+        let today = new Date();
+        let birthDate = new Date(year, month - 1, day);
+
+        if (birthDate > today) {
+            resultDiv.innerText = "تاريخ الميلاد لا يمكن أن يكون في المستقبل!";
+            return;
+        }
+
+        let ageYears = today.getFullYear() - birthDate.getFullYear();
+        let ageMonths = today.getMonth() - birthDate.getMonth();
+        let ageDays = today.getDate() - birthDate.getDate();
+
+        if (ageDays < 0) {
+            ageMonths--;
+            let lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+            ageDays += lastMonth.getDate();
+        }
+
+        if (ageMonths < 0) {
+            ageYears--;
+            ageMonths += 12;
+        }
+
+        resultDiv.innerText = `عمرك هو: ${ageYears} سنة و ${ageMonths} شهر و ${ageDays} يوم`;
+    }
+
+    calcButton.addEventListener("click", calculateAge);
+});
